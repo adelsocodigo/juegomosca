@@ -56,14 +56,8 @@
     input[type=range] { width: 140px; }
 
     /* Controles móviles persistentes */
-    .mobile-controls { display:none; gap:8px; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 56px); justify-items:center; align-items:center; margin-top:8px; }
-    .mobile-controls .mbtn { width:56px; height:56px; border-radius:14px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); display:grid; place-items:center; font-weight:800; letter-spacing:1px; -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select:none; font-size:18px; }
-    .mobile-controls .mbtn:active { background: rgba(255,255,255,.1); }
-    @media (hover: none), (pointer: coarse) { .mobile-controls { display:grid; } }
-    .mobile-controls .mbtn { width:72px; height:72px; border-radius:18px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); display:grid; place-items:center; font-weight:800; letter-spacing:1px; -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select:none; font-size:20px; }
-    .mobile-controls .mbtn:active { background: rgba(255,255,255,.1); }
-    @media (hover: none), (pointer: coarse) { .mobile-controls { display:grid; } }
-    .mobile-controls .mbtn { height:64px; border-radius:16px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); display:grid; place-items:center; font-weight:800; letter-spacing:1px; -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select:none; }
+    .mobile-controls { display:none; gap:8px; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 64px); justify-items:center; align-items:center; margin-top:8px; }
+    .mobile-controls .mbtn { width:64px; height:64px; border-radius:16px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); display:grid; place-items:center; font-weight:800; letter-spacing:1px; -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select:none; font-size:18px; }
     .mobile-controls .mbtn:active { background: rgba(255,255,255,.1); }
     @media (hover: none), (pointer: coarse) { .mobile-controls { display:grid; } }
 
@@ -122,8 +116,6 @@
       <div></div>
       <div class="mbtn" id="m-down">▼</div>
       <div></div>
-    </div>
-
     </div>
 
     <footer>
@@ -279,34 +271,49 @@
 
     function drawSpider(s){
       const ox = Math.round(s.x), oy = Math.round(s.y);
-      const body = ['#2b2b34','#2f2f38','#3a3a46'];
-      for(let yy=0; yy<s.h; yy++){
-        for(let xx=0; xx<s.w; xx++){
-          const dx = (xx-6)/6, dy = (yy-5)/5; if(dx*dx + dy*dy <= 1){
-            const shade = body[(yy>>1)%body.length];
+      const body = ['#0f1611','#152017','#1c2a1f','#26362b'];
+      for(let yy=-1; yy<=s.h; yy++){
+        for(let xx=-1; xx<=s.w; xx++){
+          const dx = (xx - s.w/2 + 0.5) / 6;
+          const dy = (yy - s.h/2) / 5.2;
+          const d2 = dx*dx + dy*dy;
+          if(d2 <= 1){
+            const shade = body[Math.min(body.length-1, Math.floor(d2*4))];
             px(ox+xx, oy+yy, shade);
           }
         }
       }
-      for(let yy=0; yy<4; yy++) for(let xx=0; xx<6; xx++) px(ox+3+xx, oy-4+yy, '#2f2f38');
-      px(ox+5, oy-3, '#ffffff'); px(ox+8, oy-3, '#ffffff');
-      px(ox+5, oy-2, '#b21f1f'); px(ox+8, oy-2, '#b21f1f');
-      px(ox+6, oy, '#e6e6e6'); px(ox+7, oy, '#e6e6e6');
-      const phase = Math.sin(state.tick*0.02);
+      for(let yy=-2; yy<2; yy++) for(let xx=3; xx<9; xx++) px(ox+xx, oy+yy, '#1f2d21');
+      px(ox+5, oy-2, '#f5f1d6'); px(ox+8, oy-2, '#f5f1d6');
+      px(ox+5, oy-1, '#e65050'); px(ox+8, oy-1, '#e65050');
+      px(ox+6, oy+1, '#f0f0f0'); px(ox+7, oy+1, '#f0f0f0');
+      px(ox+6, oy+2, '#bfc3d6'); px(ox+7, oy+2, '#bfc3d6');
+      px(ox+6, oy+3, '#0d140f'); px(ox+7, oy+3, '#0d140f');
       const legY = [1,3,5,7];
       for(let i=0;i<legY.length;i++){
         const y = oy + legY[i];
-        const offset = Math.round((phase + i*0.7) * 1);
-        px(ox-2+offset, y, '#0c0c11'); px(ox-1+offset, y, '#0c0c11'); px(ox-3+offset, y-1, '#0c0c11');
-        px(ox+s.w+1-offset, y, '#0c0c11'); px(ox+s.w-offset, y, '#0c0c11'); px(ox+s.w+2-offset, y-1, '#0c0c11');
+        const wobble = Math.round(Math.sin(state.tick*0.02 + i*0.5)*2);
+        px(ox-3+wobble, y-1, '#071008'); px(ox-2+wobble, y, '#0f1a12'); px(ox-1+wobble, y+1, '#0f1a12');
+        px(ox+s.w+2-wobble, y-1, '#071008'); px(ox+s.w+1-wobble, y, '#0f1a12'); px(ox+s.w-wobble, y+1, '#0f1a12');
       }
+      px(ox+4, oy+1, '#3c5b44'); px(ox+8, oy+1, '#3c5b44');
+      px(ox+5, oy, '#4f7252'); px(ox+7, oy, '#4f7252');
     }
 
     function drawFly(f){
       const ox = Math.round(f.x), oy = Math.round(f.y);
-      for(let yy=0; yy<3; yy++) for(let xx=0; xx<3; xx++) px(ox+xx, oy+yy, '#3a5f3a');
-      px(ox-1, oy, '#9dd3ff'); px(ox+3, oy, '#9dd3ff');
-      px(ox+1, oy+1, '#78a678');
+      px(ox, oy-1, '#e5f6ff'); px(ox+2, oy-1, '#e5f6ff');
+      px(ox-1, oy, '#c5e5ff'); px(ox+3, oy, '#c5e5ff');
+      px(ox-1, oy+1, '#a7cde8'); px(ox+3, oy+1, '#a7cde8');
+      for(let yy=0; yy<3; yy++){
+        for(let xx=0; xx<3; xx++){
+          const base = ['#1c2b1f','#2f4b30','#3f7140'][yy];
+          px(ox+xx, oy+yy, base);
+        }
+      }
+      px(ox+1, oy+1, '#4f9a52');
+      px(ox, oy+2, '#d45b5b'); px(ox+2, oy+2, '#d45b5b');
+      px(ox+1, oy+3, '#131c13');
     }
 
     function drawWasp(w){
@@ -442,9 +449,12 @@
 
     // ======= HUD =======
     function drawFlyIcon(x,y){
-      px(x+2,y+2,'#3a5f3a'); px(x+3,y+2,'#3a5f3a'); px(x+1,y+2,'#3a5f3a');
-      px(x,y+2,'#9dd3ff'); px(x+4,y+2,'#9dd3ff');
-      px(x+2,y+3,'#78a678');
+      px(x+1,y+1,'#e5f6ff'); px(x+3,y+1,'#e5f6ff');
+      px(x,y+2,'#c5e5ff'); px(x+4,y+2,'#c5e5ff');
+      px(x,y+3,'#a7cde8'); px(x+4,y+3,'#a7cde8');
+      px(x+1,y+2,'#2f4b30'); px(x+2,y+2,'#3f7140'); px(x+3,y+2,'#2f4b30');
+      px(x+2,y+3,'#4f9a52');
+      px(x+1,y+4,'#d45b5b'); px(x+3,y+4,'#d45b5b');
     }
     function drawRoundedPanel(x,y,w,h){
       ctx.fillStyle = 'rgba(5,10,16,0.7)'; ctx.fillRect(x,y,w,h);
